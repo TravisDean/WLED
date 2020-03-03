@@ -32,8 +32,8 @@ void WS2812FX::init(bool supportWhite, uint16_t countPixels, bool skipFirst)
   if (supportWhite == _useRgbw && countPixels == _length && skipFirst == _skipFirstMode) return;
   RESET_RUNTIME;
   _useRgbw = supportWhite;
-  _skipFirstMode = skipFirst;
   _length = countPixels;
+  _skipFirstMode = skipFirst;
 
   uint8_t ty = 1;
   if (supportWhite) ty = 2;
