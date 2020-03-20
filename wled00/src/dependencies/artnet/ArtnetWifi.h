@@ -64,8 +64,12 @@ class ArtnetWifi
 public:
   ArtnetWifi();
 
-  void begin(String hostname = "");
+  void begin(WiFiUDP* udp, String hostname = "");
   uint16_t read(void);
+
+  bool isArtnetPacket(uint8_t* udp_artnet, uint16_t packetSize);
+  uint16_t read(uint8_t* udp_artnet, uint16_t packetSize);
+
   /* returns 1 for Ok, or 0 on problem */
   int write(void);
   int write(IPAddress ip);
@@ -133,7 +137,7 @@ public:
 private:
   uint16_t makePacket(void);
 
-  WiFiUDP Udp;
+  WiFiUDP* Udp;
   String host;
   uint8_t artnetPacket[MAX_BUFFER_ARTNET];
   uint16_t packetSize;

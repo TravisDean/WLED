@@ -25,28 +25,69 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include <ArtnetWifi.h>
+#include "src/dependencies/artnet/ArtnetWifi.h"
 
 
 const char ArtnetWifi::artnetId[] = ART_NET_ID;
 
 ArtnetWifi::ArtnetWifi() {}
 
-void ArtnetWifi::begin(String hostname)
+void ArtnetWifi::begin(WiFiUDP* udp, String hostname)
 {
-  Udp.begin(ART_NET_PORT);
+  //Udp.begin(ART_NET_PORT);
   host = hostname;
   sequence = 1;
   physical = 0;
 }
 
+bool ArtnetWifi::isArtnetPacket(uint8_t* udp_artnet, uint16_t packetSize) {
+  if (packetSize <= MAX_BUFFER_ARTNET && packetSize > 0)
+  {
+      if (memcmp(udp_artnet, artnetId, sizeof(artnetId)) != 0) {
+        return 0;
+      }
+  }
+}
+
+uint16_t ArtnetWifi::read(uint8_t* udp_artnet, uint16_t packetSize)
+{
+  if (packetSize <= MAX_BUFFER_ARTNET && packetSize > 0)
+  {
+      // Check that packetID is "Art-Net" else ignore
+      if (memcmp(udp_artnet, artnetId, sizeof(artnetId)) != 0) {
+        return 0;
+      }
+
+      opcode = udp_artnet[8] | udp_artnet[9] << 8;
+
+      if (opcode == ART_DMX)
+      {
+        sequence = udp_artnet[12];
+        incomingUniverse = udp_artnet[14] | udp_artnet[15] << 8;
+        dmxDataLength = udp_artnet[17] | udp_artnet[16] << 8;
+
+        if (artDmxCallback) (*artDmxCallback)(incomingUniverse, dmxDataLength, sequence, udp_artnet + ART_DMX_START);
+        if (artDmxFunc) {
+          artDmxFunc(incomingUniverse, dmxDataLength, sequence, udp_artnet + ART_DMX_START);
+        }
+        return ART_DMX;
+      }
+      if (opcode == ART_POLL)
+      {
+        return ART_POLL;
+      }
+  }
+
+  return 0;
+}
+
 uint16_t ArtnetWifi::read(void)
 {
-  packetSize = Udp.parsePacket();
+  packetSize = Udp->parsePacket();
 
   if (packetSize <= MAX_BUFFER_ARTNET && packetSize > 0)
   {
-      Udp.read(artnetPacket, MAX_BUFFER_ARTNET);
+      Udp->read(artnetPacket, MAX_BUFFER_ARTNET);
 
       // Check that packetID is "Art-Net" else ignore
       if (memcmp(artnetPacket, artnetId, sizeof(artnetId)) != 0) {
@@ -108,10 +149,10 @@ int ArtnetWifi::write(void)
   uint16_t len;
 
   len = makePacket();
-  Udp.beginPacket(host.c_str(), ART_NET_PORT);
-  Udp.write(artnetPacket, ART_DMX_START + len);
+  Udp->beginPacket(host.c_str(), ART_NET_PORT);
+  Udp->write(artnetPacket, ART_DMX_START + len);
 
-  return Udp.endPacket();
+  return Udp->endPacket();
 }
 
 int ArtnetWifi::write(IPAddress ip)
@@ -119,10 +160,10 @@ int ArtnetWifi::write(IPAddress ip)
   uint16_t len;
 
   len = makePacket();
-  Udp.beginPacket(ip, ART_NET_PORT);
-  Udp.write(artnetPacket, ART_DMX_START + len);
+  Udp->beginPacket(ip, ART_NET_PORT);
+  Udp->write(artnetPacket, ART_DMX_START + len);
 
-  return Udp.endPacket();
+  return Udp->endPacket();
 }
 
 void ArtnetWifi::setByte(uint16_t pos, uint8_t value)

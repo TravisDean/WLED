@@ -466,6 +466,7 @@ AsyncMqttClient* mqtt = NULL;
 void colorFromUint32(uint32_t, bool = false);
 void serveMessage(AsyncWebServerRequest*, uint16_t, String, String, byte);
 void handleE131Packet(e131_packet_t*, IPAddress);
+void handleArtnetPacket(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data);
 void arlsLock(uint32_t,byte);
 void handleOverlayDraw();
 
@@ -474,6 +475,11 @@ WiFiUDP notifierUdp, rgbUdp;
 WiFiUDP ntpUdp;
 ESPAsyncE131 e131(handleE131Packet);
 bool e131NewData = false;
+
+#ifndef WLED_DISABLE_ARTNET
+  ArtnetWifi artnet;
+  bool artnetNewData = false;
+#endif
 
 //led fx library object
 WS2812FX strip = WS2812FX();

@@ -242,6 +242,10 @@ void initInterfaces() {
 
   initBlynk(blynkApiKey);
   e131.begin((e131Multicast) ? E131_MULTICAST : E131_UNICAST , e131Universe, E131_MAX_UNIVERSE_COUNT);
+  #ifndef WLED_DISABLE_ARTNET
+    artnet.setArtDmxFunc(handleArtnetPacket);
+    artnet.begin(&rgbUdp);
+  #endif
   reconnectHue();
   initMqtt();
   interfacesInited = true;
