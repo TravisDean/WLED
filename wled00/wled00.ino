@@ -74,6 +74,9 @@
 #ifndef WLED_DISABLE_BLYNK
   #include "src/dependencies/blynk/BlynkSimpleEsp.h"
 #endif
+#ifndef WLED_DISABLE_ARTNET
+  #include "src/dependencies/artnet/ArtnetWifi.h"
+#endif
 #include "src/dependencies/e131/ESPAsyncE131.h"
 #include "src/dependencies/async-mqtt-client/AsyncMqttClient.h"
 #include "src/dependencies/json/AsyncJson-v6.h"
