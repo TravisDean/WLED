@@ -89,12 +89,13 @@ int numberOfChannels = ledCount * 3;
 int startUniverse = 0;
 // Check if we got all universes
 //int maxUniverses = numberOfChannels / 512 + ((numberOfChannels % 512) ? 1 : 0);
-const int maxUniverses = 15;
+const int maxUniverses = 1;
 bool universesReceived[maxUniverses];
 bool sendFrame = 1;
 int previousDataLength = 0;
 
 void handleArtnetPacket(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data){
+  DEBUG_PRINTLN("Handle begin.");
   // Artnet protocol support
   sendFrame = 1;
 
@@ -107,11 +108,13 @@ void handleArtnetPacket(uint16_t universe, uint16_t length, uint8_t sequence, ui
   {
     if (universesReceived[i] == 0)
     {
-      //Serial.println("Broke");
+      Serial.println("Broke");
       sendFrame = 0;
       break;
     }
   }
+
+  arlsLock(realtimeTimeoutMs, REALTIME_MODE_ARTNET);
 
   // read universe and put into the right part of the display buffer
   for (int i = 0; i < length / 3; i++)
@@ -129,7 +132,7 @@ void handleArtnetPacket(uint16_t universe, uint16_t length, uint8_t sequence, ui
     // Reset universeReceived to 0
     memset(universesReceived, 0, maxUniverses);
   }
-
+  DEBUG_PRINTLN("Handle end.");
   // END EXAMPLE CODE
 }
 
@@ -391,7 +394,10 @@ void handleNotifications()
       if (receiveNotificationBrightness || !someSel) bri = udpIn[2];
       colorUpdated(NOTIFIER_CALL_MODE_NOTIFICATION);
       
-    }  else if (udpIn[0] > 0 && udpIn[0] < 5 && receiveDirect) //1 warls //2 drgb //3 drgbw
+    } else if (udpIn[0] > 0 && receiveDirect && artnet.read(udpIn, packetSize)) {     // artnet packet
+          //Serial.println("artnet packet read.");
+    }
+    else if (udpIn[0] > 0 && udpIn[0] < 5 && receiveDirect) //1 warls //2 drgb //3 drgbw
     {
       realtimeIP = notifierUdp.remoteIP();
       DEBUG_PRINTLN(notifierUdp.remoteIP());
@@ -439,10 +445,6 @@ void handleNotifications()
         }
         strip.show();
       }
-    } else if (udpIn[0] > 0 && receiveDirect) {     // artnet packet
-        if (artnet.isArtnetPacket(udpIn, packetSize)) {
-          artnet.read(udpIn, packetSize);
-        }
     }
   }
 }
@@ -460,4 +462,6 @@ void setRealtimePixel(uint16_t i, byte r, byte g, byte b, byte w)
       strip.setPixelColor(pix, r, g, b, w);
     }
   }
+  //Serial.println(std::format("pixel set: {} - {} {} {}", pix, r, g, b);
+  Serial.println("Pixel set.");
 }

@@ -45,13 +45,27 @@ THE SOFTWARE.
 #endif
 #include <WiFiUdp.h>
 
+#define ARTNET_DEBUG
+//debug macros
+#ifdef ARTNET_DEBUG
+  #define DEBUG_PRINT(x)  Serial.print (x)
+  #define DEBUG_PRINTLN(x) Serial.println (x)
+  #define DEBUG_PRINTF(x) Serial.printf (x)
+#else
+  #define DEBUG_PRINT(x)
+  #define DEBUG_PRINTLN(x)
+  #define DEBUG_PRINTF(x)
+#endif
+
+
+
 // UDP specific
 #define ART_NET_PORT 6454
 // Opcodes
 #define ART_POLL 0x2000
 #define ART_DMX 0x5000
 // Buffers
-#define MAX_BUFFER_ARTNET 530
+#define MAX_BUFFER_ARTNET 538   // Resolume sends 538 length UDP packets, 512 artnet length...
 // Packet
 #define ART_NET_ID "Art-Net"
 #define ART_DMX_START 18
@@ -67,7 +81,6 @@ public:
   void begin(WiFiUDP* udp, String hostname = "");
   uint16_t read(void);
 
-  bool isArtnetPacket(uint8_t* udp_artnet, uint16_t packetSize);
   uint16_t read(uint8_t* udp_artnet, uint16_t packetSize);
 
   /* returns 1 for Ok, or 0 on problem */

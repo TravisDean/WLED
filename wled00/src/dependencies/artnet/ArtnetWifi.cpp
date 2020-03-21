@@ -27,7 +27,6 @@ THE SOFTWARE.
 
 #include "src/dependencies/artnet/ArtnetWifi.h"
 
-
 const char ArtnetWifi::artnetId[] = ART_NET_ID;
 
 ArtnetWifi::ArtnetWifi() {}
@@ -40,21 +39,13 @@ void ArtnetWifi::begin(WiFiUDP* udp, String hostname)
   physical = 0;
 }
 
-bool ArtnetWifi::isArtnetPacket(uint8_t* udp_artnet, uint16_t packetSize) {
-  if (packetSize <= MAX_BUFFER_ARTNET && packetSize > 0)
-  {
-      if (memcmp(udp_artnet, artnetId, sizeof(artnetId)) != 0) {
-        return 0;
-      }
-  }
-}
-
 uint16_t ArtnetWifi::read(uint8_t* udp_artnet, uint16_t packetSize)
 {
   if (packetSize <= MAX_BUFFER_ARTNET && packetSize > 0)
   {
       // Check that packetID is "Art-Net" else ignore
       if (memcmp(udp_artnet, artnetId, sizeof(artnetId)) != 0) {
+        DEBUG_PRINTLN("artnet memcmp failed.");
         return 0;
       }
 
@@ -68,12 +59,15 @@ uint16_t ArtnetWifi::read(uint8_t* udp_artnet, uint16_t packetSize)
 
         if (artDmxCallback) (*artDmxCallback)(incomingUniverse, dmxDataLength, sequence, udp_artnet + ART_DMX_START);
         if (artDmxFunc) {
+          DEBUG_PRINTLN("Calling artDmxFunc");
           artDmxFunc(incomingUniverse, dmxDataLength, sequence, udp_artnet + ART_DMX_START);
         }
         return ART_DMX;
       }
       if (opcode == ART_POLL)
       {
+        // Call the poll reply function here.
+        DEBUG_PRINTLN("ArtPoll recieved.");
         return ART_POLL;
       }
   }
