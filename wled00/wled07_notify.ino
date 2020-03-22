@@ -462,6 +462,4 @@ void setRealtimePixel(uint16_t i, byte r, byte g, byte b, byte w)
       strip.setPixelColor(pix, r, g, b, w);
     }
   }
-  //Serial.println(std::format("pixel set: {} - {} {} {}", pix, r, g, b);
-  Serial.println("Pixel set.");
 }
