@@ -75,7 +75,7 @@
   #include "src/dependencies/blynk/BlynkSimpleEsp.h"
 #endif
 #ifndef WLED_DISABLE_ARTNET
-  #include "src/dependencies/artnet/ArtnetWifi.h"
+  #include "src/dependencies/artnet-node-wifi/ArtnetnodeWifi.h"
 #endif
 #include "src/dependencies/e131/ESPAsyncE131.h"
 #include "src/dependencies/async-mqtt-client/AsyncMqttClient.h"
@@ -122,7 +122,7 @@
 #endif
 
 //version code in format yymmddb (b = daily build)
-#define VERSION 2003141
+#define VERSION 2003231
 
 char versionString[] = "0.9.1";
 
@@ -477,7 +477,7 @@ ESPAsyncE131 e131(handleE131Packet);
 bool e131NewData = false;
 
 #ifndef WLED_DISABLE_ARTNET
-  ArtnetWifi artnet;
+  ArtnetnodeWifi artnet;
   bool artnetNewData = false;
 #endif
 

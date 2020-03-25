@@ -302,6 +302,7 @@ void handleNotifications()
     strip.setBrightness(bri);
     realtimeMode = REALTIME_MODE_INACTIVE;
   }
+  artnet.read();
 
   //receive UDP notifications
   if (!udpConnected || !(receiveNotifications || receiveDirect)) return;
@@ -393,9 +394,6 @@ void handleNotifications()
       
       if (receiveNotificationBrightness || !someSel) bri = udpIn[2];
       colorUpdated(NOTIFIER_CALL_MODE_NOTIFICATION);
-      
-    } else if (udpIn[0] > 0 && receiveDirect && artnet.read(udpIn, packetSize)) {     // artnet packet
-          //Serial.println("artnet packet read.");
     }
     else if (udpIn[0] > 0 && udpIn[0] < 5 && receiveDirect) //1 warls //2 drgb //3 drgbw
     {

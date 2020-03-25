@@ -243,7 +243,12 @@ void initInterfaces() {
   initBlynk(blynkApiKey);
   e131.begin((e131Multicast) ? E131_MULTICAST : E131_UNICAST , e131Universe, E131_MAX_UNIVERSE_COUNT);
   #ifndef WLED_DISABLE_ARTNET
-    artnet.setArtDmxFunc(handleArtnetPacket);
+    artnet.setArtDmxCallback(handleArtnetPacket);
+    artnet.setName("ESP32-ArtnetTEST");   // TODO: Change to pull from config.
+    artnet.setNumPorts(1);
+    artnet.enableDMXOutput(0);
+    artnet.setStartingUniverse(1);    // TODO: Pull.
+    artnet.begin();                   // TODO: If writing, need to change to remote IP.
   #endif
   reconnectHue();
   initMqtt();
