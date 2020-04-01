@@ -87,6 +87,8 @@ void arlsLock(uint32_t timeoutMs, byte md)
 }
 
 
+
+
 void handleNotifications()
 {
   //send second notification if enabled
@@ -100,12 +102,19 @@ void handleNotifications()
     strip.show();
   }
 
+  if (artnetNewData && millis() - strip.getLastShow() > 15)
+  {
+    artnetNewData = false;
+    strip.show();
+  }
+
   //unlock strip when realtime UDP times out
   if (realtimeMode && millis() > realtimeTimeout)
   {
     strip.setBrightness(bri);
     realtimeMode = REALTIME_MODE_INACTIVE;
   }
+  artnet.read();
 
   //receive UDP notifications
   if (!udpConnected || !(receiveNotifications || receiveDirect)) return;
@@ -197,8 +206,8 @@ void handleNotifications()
       
       if (receiveNotificationBrightness || !someSel) bri = udpIn[2];
       colorUpdated(NOTIFIER_CALL_MODE_NOTIFICATION);
-      
-    }  else if (udpIn[0] > 0 && udpIn[0] < 5 && receiveDirect) //1 warls //2 drgb //3 drgbw
+    }
+    else if (udpIn[0] > 0 && udpIn[0] < 5 && receiveDirect) //1 warls //2 drgb //3 drgbw
     {
       realtimeIP = notifierUdp.remoteIP();
       DEBUG_PRINTLN(notifierUdp.remoteIP());

@@ -327,6 +327,8 @@ WiFiUDP notifierUdp, rgbUdp;
 WiFiUDP ntpUdp;
 ESPAsyncE131 e131(handleE131Packet);
 bool e131NewData = false;
+ArtnetnodeWifi artnet;
+bool artnetNewData = false;
 
 // led fx library object
 WS2812FX strip = WS2812FX();
@@ -705,6 +707,14 @@ void WLED::initInterfaces()
 
   initBlynk(blynkApiKey);
   e131.begin((e131Multicast) ? E131_MULTICAST : E131_UNICAST, e131Universe, E131_MAX_UNIVERSE_COUNT);
+  #ifndef WLED_DISABLE_ARTNET
+    artnet.setArtDmxCallback(handleArtnetPacket);
+    artnet.setName("ESP32-ArtnetTEST");   // TODO: Change to pull from config.
+    artnet.setNumPorts(1);
+    artnet.enableDMXOutput(0);
+    artnet.setStartingUniverse(1);    // TODO: Pull.
+    artnet.begin();                   // TODO: If writing, need to change to remote IP.
+  #endif
   reconnectHue();
   initMqtt();
   interfacesInited = true;

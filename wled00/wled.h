@@ -77,6 +77,7 @@
 #endif
 
 #include "src/dependencies/e131/ESPAsyncE131.h"
+#include "src/dependencies/artnet-node-wifi/ArtnetnodeWifi.h"
 #include "src/dependencies/async-mqtt-client/AsyncMqttClient.h"
 #include "src/dependencies/json/AsyncJson-v6.h"
 #include "src/dependencies/json/ArduinoJson-v6.h"
@@ -361,6 +362,8 @@ extern WiFiUDP notifierUdp, rgbUdp;
 extern WiFiUDP ntpUdp;
 extern ESPAsyncE131 e131;
 extern bool e131NewData;
+extern ArtnetnodeWifi artnet;
+extern bool artnetNewData; 
 extern WS2812FX strip;
 
 #define WLED_CONNECTED (WiFi.status() == WL_CONNECTED)

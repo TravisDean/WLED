@@ -40,6 +40,8 @@ void colorRGBtoRGBW(byte* rgb); //rgb to rgbw (http://codewelt.com/rgbw). (RGBW_
 //e131.cpp
 void handleE131Packet(e131_packet_t* p, IPAddress clientIP);
 
+void handleArtnetPacket(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data);
+
 //file.cpp
 bool handleFileRead(AsyncWebServerRequest*, String path);
 
