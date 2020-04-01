@@ -1,4 +1,5 @@
 #include "wled.h"
+#include "dmx.h"
 
 /*
  * Sending XML status files to client
@@ -451,7 +452,7 @@ void getSettingsJS(byte subPage, char* dest)
     oappend(") OK\";");
   }
   
-  #ifdef WLED_ENABLE_DMX // include only if DMX is enabled
+  #ifdef WLED_ENABLE_DMXOUT // include only if DMX is enabled
   if (subPage == 7)
   {
     sappend('v',"CN",DMXChannels);

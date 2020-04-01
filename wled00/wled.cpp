@@ -1,5 +1,6 @@
 #include "wled.h"
 #include <Arduino.h>
+#include "dmx.h"
 
 // Global Variable definitions
 char versionString[] = "0.9.1n";
@@ -80,13 +81,6 @@ bool receiveDirect = true;                     // receive UDP realtime
 bool arlsDisableGammaCorrection = true;        // activate if gamma correction is handled by the source
 bool arlsForceMaxBri = false;                  // enable to force max brightness if source has very dark colors that would be black
 
-uint16_t e131Universe = 1;                                      // settings for E1.31 (sACN) protocol (only DMX_MODE_MULTIPLE_* can span over consequtive universes)
-uint8_t DMXMode = DMX_MODE_MULTIPLE_RGB;                        // DMX mode (s.a.)
-uint16_t DMXAddress = 1;                                        // DMX start address of fixture, a.k.a. first Channel [for E1.31 (sACN) protocol]
-uint8_t DMXOldDimmer = 0;                                       // only update brightness on change
-uint8_t e131LastSequenceNumber[E131_MAX_UNIVERSE_COUNT];        // to detect packet loss
-bool e131Multicast = false;                                     // multicast or unicast
-bool e131SkipOutOfSequence = false;                             // freeze instead of flickering
 
 bool mqttEnabled = false;
 char mqttDeviceTopic[33] = "";               // main MQTT topic (individual per device, default is wled/mac)
@@ -140,14 +134,6 @@ bool aOtaEnabled = true;        // ArduinoOTA allows easy updates directly from 
 
 uint16_t userVar0 = 0, userVar1 = 0;
 
-#ifdef WLED_ENABLE_DMX
-  // dmx CONFIG
-  byte DMXChannels = 7;        // number of channels per fixture
-  byte DMXFixtureMap[15] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-  // assigns the different channels to different functions. See wled21_dmx.ino for more information.
-  uint16_t DMXGap = 10;          // gap between the fixtures. makes addressing easier because you don't have to memorize odd numbers when climbing up onto a rig.
-  uint16_t DMXStart = 10;        // start address of the first fixture
-#endif
 
 // internal global variable declarations
 // wifi
@@ -325,10 +311,6 @@ AsyncMqttClient* mqtt = NULL;
 // udp interface objects
 WiFiUDP notifierUdp, rgbUdp;
 WiFiUDP ntpUdp;
-ESPAsyncE131 e131(handleE131Packet);
-bool e131NewData = false;
-ArtnetnodeWifi artnet;
-bool artnetNewData = false;
 
 // led fx library object
 WS2812FX strip = WS2812FX();
@@ -382,9 +364,7 @@ void WLED::loop()
   handleSerial();
   handleNotifications();
   handleTransitions();
-#ifdef WLED_ENABLE_DMX
-  handleDMX();
-#endif
+  handleDMXOutput();
   userLoop();
 
   yield();
@@ -547,7 +527,7 @@ void WLED::setup()
       ArduinoOTA.setHostname(cmDNS);
   }
 #endif
-#ifdef WLED_ENABLE_DMX
+#ifdef WLED_ENABLE_DMXOUT
   dmx.init(512);        // initialize with bus length
 #endif
   // HTTP server page init
@@ -706,15 +686,17 @@ void WLED::initInterfaces()
     ntpConnected = ntpUdp.begin(ntpLocalPort);
 
   initBlynk(blynkApiKey);
+#ifdef WLED_ENABLE_E131
   e131.begin((e131Multicast) ? E131_MULTICAST : E131_UNICAST, e131Universe, E131_MAX_UNIVERSE_COUNT);
-  #ifndef WLED_DISABLE_ARTNET
-    artnet.setArtDmxCallback(handleArtnetPacket);
-    artnet.setName("ESP32-ArtnetTEST");   // TODO: Change to pull from config.
-    artnet.setNumPorts(1);
-    artnet.enableDMXOutput(0);
-    artnet.setStartingUniverse(1);    // TODO: Pull.
-    artnet.begin();                   // TODO: If writing, need to change to remote IP.
-  #endif
+#endif
+#ifdef WLED_ENABLE_ARTNET
+  artnet.setArtDmxCallback(handleArtnetPacket);
+  artnet.setName("ESP32-Artnet");   // TODO: Change to pull from config.
+  artnet.setNumPorts(1);
+  artnet.enableDMXOutput(0);
+  artnet.setStartingUniverse(1);    // TODO: Pull.
+  artnet.begin();                   // TODO: If writing, need to change to remote IP.
+#endif
   reconnectHue();
   initMqtt();
   interfacesInited = true;

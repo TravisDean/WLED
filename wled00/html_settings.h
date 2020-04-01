@@ -172,7 +172,7 @@ Skip first LED: <input type=checkbox name=SL><hr>
 </form></body></html>)=====";
 
 
-#ifdef WLED_ENABLE_DMX
+#ifdef WLED_ENABLE_DMXOUT
 //DMX Output settings
 const char PAGE_settings_dmx[] PROGMEM = R"=====(<!DOCTYPE html>
 <html><head><meta name="viewport" content="width=500"><meta charset="utf-8"><title>DMX Settings</title><script>

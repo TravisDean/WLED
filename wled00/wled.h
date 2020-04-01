@@ -27,7 +27,9 @@
 //#define WLED_DISABLE_INFRARED    // there is no pin left for this on ESP8266-01, saves 12kb
 #define WLED_ENABLE_MQTT            // saves 12kb
 #define WLED_ENABLE_ADALIGHT        // saves 500b only
-//#define WLED_ENABLE_DMX          // uses 3.5kb
+#define WLED_ENABLE_DMXOUT          // uses 3.5kb
+#define WLED_ENABLE_ARTNET          // TODO: Saves??
+#define WLED_ENABLE_E131            // TODO: Saves??
 
 #define WLED_DISABLE_FILESYSTEM        // SPIFFS is not used by any WLED feature yet
 //#define WLED_ENABLE_FS_SERVING   // Enable sending html file from SPIFFS before serving progmem version
@@ -179,14 +181,6 @@ extern int arlsOffset;
 extern bool receiveDirect;              
 extern bool arlsDisableGammaCorrection; 
 extern bool arlsForceMaxBri;           
-#define E131_MAX_UNIVERSE_COUNT 9
-extern uint16_t e131Universe;                               
-extern uint8_t DMXMode;                 
-extern uint16_t DMXAddress;                                 
-extern uint8_t DMXOldDimmer;                                
-extern uint8_t e131LastSequenceNumber[E131_MAX_UNIVERSE_COUNT]; 
-extern bool e131Multicast;                              
-extern bool e131SkipOutOfSequence;                      
 extern bool mqttEnabled;
 extern char mqttDeviceTopic[33];        
 extern char mqttGroupTopic[33]; 
@@ -228,12 +222,6 @@ extern bool otaLock;
 extern bool wifiLock;   
 extern bool aOtaEnabled; 
 extern uint16_t userVar0, userVar1;
-#ifdef WLED_ENABLE_DMX
-  extern byte DMXChannels; 
-  extern byte DMXFixtureMap[15];
-  extern uint16_t DMXGap;   
-  extern uint16_t DMXStart; 
-#endif
 extern bool apActive;
 extern bool forceReconnect;
 extern uint32_t lastReconnectAttempt;
@@ -360,10 +348,6 @@ extern AsyncClient* hueClient;
 extern AsyncMqttClient* mqtt;
 extern WiFiUDP notifierUdp, rgbUdp;
 extern WiFiUDP ntpUdp;
-extern ESPAsyncE131 e131;
-extern bool e131NewData;
-extern ArtnetnodeWifi artnet;
-extern bool artnetNewData; 
 extern WS2812FX strip;
 
 #define WLED_CONNECTED (WiFi.status() == WL_CONNECTED)

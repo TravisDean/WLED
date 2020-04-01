@@ -1,5 +1,6 @@
 #include <EEPROM.h>
 #include "wled.h"
+#include "dmx.h"
 
 /*
  * Methods to handle saving and loading to non-volatile memory
@@ -261,7 +262,7 @@ void saveSettingsToEEPROM()
   EEPROM.write(2523, (mqttPort >> 8) & 0xFF);
 
   // DMX (2530 - 2549)
-  #ifdef WLED_ENABLE_DMX
+  #ifdef WLED_ENABLE_DMXOUT
   EEPROM.write(2530, DMXChannels);
   EEPROM.write(2531, DMXGap & 0xFF);
   EEPROM.write(2532, (DMXGap >> 8) & 0xFF);
@@ -547,7 +548,7 @@ void loadSettingsFromEEPROM(bool first)
   readStringFromEEPROM(2220, blynkApiKey, 35);
   if (strlen(blynkApiKey) < 25) blynkApiKey[0] = 0;
 
-  #ifdef WLED_ENABLE_DMX
+  #ifdef WLED_ENABLE_DMXOUT
   // DMX (2530 - 2549)2535
   DMXChannels = EEPROM.read(2530);
   DMXGap = EEPROM.read(2531) + ((EEPROM.read(2532) << 8) & 0xFF00);

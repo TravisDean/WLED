@@ -5,7 +5,7 @@
 #define ARTNET_PORT 6454
 
 // Buffers
-#define ARTNET_MAX_BUFFER 530
+#define ARTNET_MAX_BUFFER 530     // TODO: Changed from protocol specified because Resolume 6 apparently doesn't follow the standard.
 #define DMX_MAX_BUFFER 512
 
 // Packet constants

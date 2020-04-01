@@ -30,7 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 struct replyPollPacket{
   char ID[8] = "Art-Net"; // protocol ID = "Art-Net"
-  //char ID[8]; // protocol ID = "Art-Net"
   uint16_t OpCode = OpPollReply; // == OpPollReply
   uint8_t IPAddr[4]; // 0 if not yet configured
   uint16_t Port = 0x1936;

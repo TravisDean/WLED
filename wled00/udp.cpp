@@ -1,4 +1,5 @@
 #include "wled.h"
+#include "dmx.h"
 
 /*
  * UDP sync notifier

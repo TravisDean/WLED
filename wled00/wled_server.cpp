@@ -213,7 +213,7 @@ void initServer()
   }
 
 
-    #ifdef WLED_ENABLE_DMX
+    #ifdef WLED_ENABLE_DMXOUT
     server.on("/dmxmap", HTTP_GET, [](AsyncWebServerRequest *request){
       request->send_P(200, "text/html", PAGE_dmxmap     , dmxProcessor);
     });
@@ -323,7 +323,7 @@ String settingsProcessor(const String& var)
     return String(buf);
   }
   
-  #ifdef WLED_ENABLE_DMX
+  #ifdef WLED_ENABLE_DMXOUT
 
   if (var == "DMXMENU") {
     return String(F("<form action=/settings/dmx><button type=submit>DMX Output</button></form>"));
@@ -337,7 +337,7 @@ String settingsProcessor(const String& var)
 String dmxProcessor(const String& var)
 {
   String mapJS;
-  #ifdef WLED_ENABLE_DMX
+  #ifdef WLED_ENABLE_DMXOUT
     if (var == "DMXVARS") {
       mapJS += "\nCN=" + String(DMXChannels) + ";\n";
       mapJS += "CS=" + String(DMXStart) + ";\n";
@@ -367,7 +367,7 @@ void serveSettings(AsyncWebServerRequest* request)
     else if (url.indexOf("sync") > 0) subPage = 4;
     else if (url.indexOf("time") > 0) subPage = 5;
     else if (url.indexOf("sec")  > 0) subPage = 6;
-    #ifdef WLED_ENABLE_DMX // include only if DMX is enabled
+    #ifdef WLED_ENABLE_DMXOUT // include only if DMX is enabled
     else if (url.indexOf("dmx")  > 0) subPage = 7;
     #endif
   } else subPage = 255; //welcome page

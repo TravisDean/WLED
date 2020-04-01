@@ -1,5 +1,5 @@
 #include "wled.h"
-
+#include "dmx.h"
 /*
  * JSON API (De)serialization
  */
