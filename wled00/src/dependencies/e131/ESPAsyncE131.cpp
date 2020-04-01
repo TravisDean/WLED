@@ -27,6 +27,9 @@ const byte ESPAsyncE131::ACN_ID[12] = { 0x41, 0x53, 0x43, 0x2d, 0x45, 0x31, 0x2e
 ESPAsyncE131::ESPAsyncE131(e131_packet_callback_function callback) {
   _callback = callback;
 }
+ESPAsyncE131::ESPAsyncE131(e131_fn callback) {
+  _callback_std = callback;
+}
 
 /////////////////////////////////////////////////////////
 //
@@ -110,7 +113,8 @@ void ESPAsyncE131::parsePacket(AsyncUDPPacket _packet) {
         error = ERROR_IGNORE;
 
     if (!error) {
-      _callback(sbuff, _packet.remoteIP());
+        if (_callback)          _callback(    sbuff, _packet.remoteIP());
+        else if (_callback_std) _callback_std(sbuff, _packet.remoteIP());
     }
 }
 

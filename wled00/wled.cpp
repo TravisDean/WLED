@@ -364,7 +364,7 @@ void WLED::loop()
   handleSerial();
   handleNotifications();
   handleTransitions();
-  handleDMXOutput();
+  dmx512.handleDMXOutput();
   userLoop();
 
   yield();
@@ -528,7 +528,7 @@ void WLED::setup()
   }
 #endif
 #ifdef WLED_ENABLE_DMXOUT
-  dmx.init(512);        // initialize with bus length
+  dmx512.oinit(512);        // initialize with bus length
 #endif
   // HTTP server page init
   initServer();
@@ -686,17 +686,7 @@ void WLED::initInterfaces()
     ntpConnected = ntpUdp.begin(ntpLocalPort);
 
   initBlynk(blynkApiKey);
-#ifdef WLED_ENABLE_E131
-  e131.begin((e131Multicast) ? E131_MULTICAST : E131_UNICAST, e131Universe, E131_MAX_UNIVERSE_COUNT);
-#endif
-#ifdef WLED_ENABLE_ARTNET
-  artnet.setArtDmxCallback(handleArtnetPacket);
-  artnet.setName("ESP32-Artnet");   // TODO: Change to pull from config.
-  artnet.setNumPorts(1);
-  artnet.enableDMXOutput(0);
-  artnet.setStartingUniverse(1);    // TODO: Pull.
-  artnet.begin();                   // TODO: If writing, need to change to remote IP.
-#endif
+  // TODO: moved dmx init
   reconnectHue();
   initMqtt();
   interfacesInited = true;

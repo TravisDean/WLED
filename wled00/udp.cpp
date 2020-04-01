@@ -97,15 +97,9 @@ void handleNotifications()
     notify(notificationSentCallMode,true);
   }
 
-  if (e131NewData && millis() - strip.getLastShow() > 15)
+  if (dmx512.hasNewData() && millis() - strip.getLastShow() > 15)
   {
-    e131NewData = false;
-    strip.show();
-  }
-
-  if (artnetNewData && millis() - strip.getLastShow() > 15)
-  {
-    artnetNewData = false;
+    dmx512.resetNewData();
     strip.show();
   }
 
@@ -115,7 +109,7 @@ void handleNotifications()
     strip.setBrightness(bri);
     realtimeMode = REALTIME_MODE_INACTIVE;
   }
-  artnet.read();
+  dmx512.read();
 
   //receive UDP notifications
   if (!udpConnected || !(receiveNotifications || receiveDirect)) return;

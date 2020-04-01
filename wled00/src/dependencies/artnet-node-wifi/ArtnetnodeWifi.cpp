@@ -211,7 +211,10 @@ uint16_t ArtnetnodeWifi::handleDMX(uint8_t nzs)
     // Sequence
     uint8_t sequence = artnetPacket[12];
 
-    if (artDmxCallback) {
+    if (artDmxFunc) {
+      artDmxFunc(universe, dmxDataLength, sequence, artnetPacket + ARTNET_DMX_START_LOC);
+    }
+    else if (artDmxCallback) {
       (*artDmxCallback)(universe, dmxDataLength, sequence, artnetPacket + ARTNET_DMX_START_LOC);
     }
 

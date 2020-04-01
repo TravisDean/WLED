@@ -20,7 +20,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-
+#include <functional>
 #include <Arduino.h>
 #if defined(ARDUINO_ARCH_ESP32) || defined(ESP32)
 #include <WiFi.h>
@@ -43,6 +43,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ProtocolSettings.h"
 #include "PollReply.h"
 
+#define DMX_FUNC_PARAM uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data
+typedef std::function <void (DMX_FUNC_PARAM)> StdFuncDmx_t;
 
 class ArtnetnodeWifi
 {
@@ -102,6 +104,11 @@ public:
     artDmxCallback = fptr;
   }
 
+  inline void setArtDmxFunc(StdFuncDmx_t func)
+  {
+    artDmxFunc = func;
+  }
+
 private:
   WiFiUDP Udp;
   PollReply PollReplyPacket;
@@ -140,6 +147,7 @@ private:
   uint8_t msSinceDMXSend;
 
   void (*artDmxCallback)(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data);
+  StdFuncDmx_t artDmxFunc;
   static const char artnetId[];
 };
 

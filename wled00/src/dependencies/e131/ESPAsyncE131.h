@@ -119,7 +119,9 @@ typedef enum {
 } e131_listen_t;
 
 // new packet callback
-typedef void (*e131_packet_callback_function) (e131_packet_t* p, IPAddress clientIP);
+#define DMX_PACKET_PARAM e131_packet_t* p, IPAddress clientIP
+typedef void (*e131_packet_callback_function) (DMX_PACKET_PARAM);
+typedef std::function <void (DMX_PACKET_PARAM)> e131_fn;
 
 class ESPAsyncE131 {
  private:
@@ -140,8 +142,10 @@ class ESPAsyncE131 {
     void parsePacket(AsyncUDPPacket _packet);
     
     e131_packet_callback_function _callback = nullptr;
+    e131_fn _callback_std;
 
  public:
+    ESPAsyncE131(e131_fn callback);
     ESPAsyncE131(e131_packet_callback_function callback);
 
     // Generic UDP listener, no physical or IP configuration

@@ -1,4 +1,5 @@
 #include "wled.h"
+#include "dmx.h"
 
 /*
  * Integrated HTTP web server page declarations
