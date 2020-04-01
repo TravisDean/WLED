@@ -220,7 +220,7 @@ void initServer()
     });
     #else
     server.on("/dmxmap", HTTP_GET, [](AsyncWebServerRequest *request){
-      serveMessage(request, 501, "Not implemented", F("DMX support is not enabled in this build."), 254);
+      serveMessage(request, 501, "Not implemented", F("DMX output support is not enabled in this build."), 254);
     });
     #endif
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){

@@ -15,7 +15,7 @@ uint8_t
     e131LastSequenceNumber[E131_MAX_UNIVERSE_COUNT]; // to detect packet loss
 DMX512 dmx512;
 
-#ifdef WLED_ENABLE_DMXOUT
+//#ifdef WLED_ENABLE_DMXOUT
   byte DMXChannels = 7; // number of channels per fixture
   byte DMXFixtureMap[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   // assigns the different channels to different functions.
@@ -23,19 +23,15 @@ DMX512 dmx512;
       10; // gap between the fixtures. makes addressing easier because you don't
           // have to memorize odd numbers when climbing up onto a rig.
   uint16_t DMXStart = 10; // start address of the first fixture
-#endif
+//#endif
 
 
 
 DMX512::DMX512() : e131(handleE131Packet) {
-  //e131 = ESPAsyncE131(std::function<void>(std::bind(DMX512::handleE131Packet, std::placeholders::_1), this));
-  // e131 = ESPAsyncE131([this](auto p, auto c) { this->handleE131Packet(p, c);});
-  // e131 = ESPAsyncE131(std::bind(&DMX512::handleE131Packet, this, std::placeholders::_1));
 #ifdef WLED_ENABLE_E131
   e131.begin((e131Multicast) ? E131_MULTICAST : E131_UNICAST, e131Universe, E131_MAX_UNIVERSE_COUNT);
 #endif
 #ifdef WLED_ENABLE_ARTNET
-
   artnet.setArtDmxFunc(handleArtnetPacket);
   artnet.setName("ESP32-Artnet");   // TODO: Change to pull from config.
   artnet.setNumPorts(1);
@@ -45,13 +41,12 @@ DMX512::DMX512() : e131(handleE131Packet) {
 #endif
 }
 
-DMX512::~DMX512() = default;
 
 /*
  * E1.31 handler
  */
 void handleE131Packet(e131_packet_t* p, IPAddress clientIP){
-  #ifdef WLED_ENABLE_E131
+#ifdef WLED_ENABLE_E131
   //E1.31 protocol support
 
   uint16_t uni = htons(p->universe);
@@ -191,8 +186,6 @@ void handleE131Packet(e131_packet_t* p, IPAddress clientIP){
   #endif
 }
 
-#ifdef WLED_ENABLE_ARTNET
-#include "src/dependencies/artnet-node-wifi/ArtnetnodeWifi.h"
 // TODO:
 // Check if we got all universes. TODO: Verify functionality
 //int maxUniverses = numberOfChannels / 512 + ((numberOfChannels % 512) ? 1 : 0);
@@ -201,6 +194,7 @@ int previousDataLength = 0;
 
 void handleArtnetPacket(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data)
 {
+#ifdef WLED_ENABLE_ARTNET
   DEBUG_PRINTLN("Handle artnet begin.");
   bool sendFrame = true;
 
@@ -238,10 +232,8 @@ void handleArtnetPacket(uint16_t universe, uint16_t length, uint8_t sequence, ui
     memset(universesReceived, 0, E131_MAX_UNIVERSE_COUNT);
   }
   DEBUG_PRINTLN("Handle artnet end.");
+  #endif
 }
-#else
-void handleArtnetPacket(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data) {}
-#endif
 
 
 #ifdef WLED_ENABLE_DMXOUT

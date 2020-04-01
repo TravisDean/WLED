@@ -27,9 +27,9 @@
 //#define WLED_DISABLE_INFRARED    // there is no pin left for this on ESP8266-01, saves 12kb
 #define WLED_ENABLE_MQTT            // saves 12kb
 #define WLED_ENABLE_ADALIGHT        // saves 500b only
-#define WLED_ENABLE_DMXOUT          // uses 3.5kb
-#define WLED_ENABLE_ARTNET          // TODO: Saves??
-#define WLED_ENABLE_E131            // TODO: Saves??
+//#define WLED_ENABLE_DMXOUT          // uses 6.8kb
+//#define WLED_ENABLE_ARTNET          // uses 1.6kb
+//#define WLED_ENABLE_E131            // uses 3.7kb
 
 #define WLED_DISABLE_FILESYSTEM        // SPIFFS is not used by any WLED feature yet
 //#define WLED_ENABLE_FS_SERVING   // Enable sending html file from SPIFFS before serving progmem version
@@ -78,8 +78,6 @@
   #include "src/dependencies/blynk/BlynkSimpleEsp.h"
 #endif
 
-#include "src/dependencies/e131/ESPAsyncE131.h"
-#include "src/dependencies/artnet-node-wifi/ArtnetnodeWifi.h"
 #include "src/dependencies/async-mqtt-client/AsyncMqttClient.h"
 #include "src/dependencies/json/AsyncJson-v6.h"
 #include "src/dependencies/json/ArduinoJson-v6.h"
